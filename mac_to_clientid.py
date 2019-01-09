@@ -12,12 +12,14 @@ mac_to_clientID
 From command line: mac_to_clientid.py <input_file> <output_file>
 As a module: import mac_to_client as my - my.mac_to_client('00:50:56:ab:2d:59')
 
-One line NEEDS to change between 2.7 & 3.1 or greater. I just can't figure an easier way today.
+
 '''
 import argparse
 import binascii
 import sys
 import re
+
+PY3 = sys.version_info[0] == 3
 
 #Constant Values  
 front_bytes = binascii.hexlify(b'cisco-')
@@ -33,8 +35,10 @@ def mac_to_client(macad):
     whole_str = '----.' * 6 +'--'
     return(whole_str)
   macaddr = macaddr[0:4]+'.'+ macaddr[4:8]+'.'+macaddr[8:12] 
-  macaddr = binascii.hexlify(bytes(macaddr, "utf-8")) # python 3.1
-# python 2.7  macaddr = binascii.hexlify(bytes(macaddr))
+  if PY3:
+    macaddr = binascii.hexlify(bytes(macaddr, "utf-8")) # python 3.1
+  else:
+    macaddr = binascii.hexlify(bytes(macaddr)) # python 2.7
   big_str = front+macaddr.decode("utf-8")+back
   for str_ptr in range(0, len(big_str)+1, 4):
     whole_str = whole_str+big_str[str_ptr:str_ptr+4]
